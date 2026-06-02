@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: resource-catalog-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/master

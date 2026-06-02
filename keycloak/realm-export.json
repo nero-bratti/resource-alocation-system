@@ -1,0 +1,39 @@
+{
+  "realm": "resource-allocation",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "gateway-client",
+      "secret": "gateway-secret",
+      "redirectUris": ["http://localhost:8080/*"],
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true
+    },
+    {
+      "clientId": "frontend",
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "teacher1",
+      "enabled": true,
+      "credentials": [ { "type": "password", "value": "teacher-pass", "temporary": false } ],
+      "realmRoles": ["teacher"]
+    },
+    {
+      "username": "student1",
+      "enabled": true,
+      "credentials": [ { "type": "password", "value": "student-pass", "temporary": false } ],
+      "realmRoles": ["student"]
+    }
+  ],
+  "roles": {
+    "realm": [ "teacher", "student" ]
+  }
+}

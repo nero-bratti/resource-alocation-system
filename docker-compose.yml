@@ -1,0 +1,135 @@
+version: '3.9'
+
+services:
+  keycloak:
+    build:
+      context: ./keycloak
+      dockerfile: Dockerfile
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_IMPORT: /opt/keycloak/realm/realm-export.json
+    ports:
+      - '8081:8080'
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080/realms/resource-allocation"]
+      interval: 10s
+      retries: 10
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: resource_allocation
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app-pass
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  config-server:
+    build:
+      context: .
+      dockerfile: config-server/Dockerfile
+    ports:
+      - '8888:8888'
+    depends_on:
+      - postgres
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    ports:
+      - '8761:8761'
+    depends_on:
+      - config-server
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    depends_on:
+      - discovery-server
+      - config-server
+      - keycloak
+
+  resource-catalog-service:
+    build:
+      context: ./resource-catalog-service
+      dockerfile: Dockerfile
+    ports:
+      - '8082:8082'
+    depends_on:
+      - discovery-server
+      - config-server
+      - postgres
+
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: Dockerfile
+    ports:
+      - '8083:8083'
+    depends_on:
+      - discovery-server
+      - config-server
+      - postgres
+
+  permission-service:
+    build:
+      context: ./permission-service
+      dockerfile: Dockerfile
+    ports:
+      - '8084:8084'
+    depends_on:
+      - discovery-server
+      - config-server
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80'
+    depends_on:
+      - gateway-service
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3001:3000'
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config", "/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    ports:
+      - '4317:4317'
+      - '8888:8888'
+
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - '9000:9000'
+    environment:
+      SONARQUBE_JDBC_URL: jdbc:postgresql://postgres:5432/resource_allocation
+      SONARQUBE_JDBC_USERNAME: app
+      SONARQUBE_JDBC_PASSWORD: app-pass
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
