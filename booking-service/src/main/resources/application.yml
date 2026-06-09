@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: booking-service
+  config:
+    import: optional:configserver:http://config-server:8888
+  datasource:
+    url: jdbc:postgresql://postgres:5432/resource_allocation
+    username: app
+    password: app-pass
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  cloud:
+    discovery:
+      enabled: true
+
+server:
+  port: 8083
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/master
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
