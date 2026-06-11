@@ -55,6 +55,24 @@ Clients in the realm:
 
 The `frontend` login link is available in `frontend/index.html` and points to the local Keycloak realm `resource-allocation`.
 
+<<<<<<< HEAD
+=======
+## Data Bank (resource-catalog)
+
+A small Data Bank feature is implemented inside the `resource-catalog-service` to store arbitrary JSON payloads keyed by an application-defined key. This is implemented on the shared PostgreSQL database and managed via Flyway migrations.
+
+- Table: `data_bank` (created by Flyway migration `resource-catalog-service/src/main/resources/db/migration/V1__create_data_bank.sql`). Columns: `id`, `entry_key` (unique), `payload` (JSONB), `created_at`, `updated_at`.
+- Endpoints: exposed by `resource-catalog-service` at `/api/databank`:
+	- `GET /api/databank` — list entries
+	- `GET /api/databank/{key}` — get entry by key
+	- `POST /api/databank` — upsert entry (JSON body: `{ "key": "k", "payload": {...} }`)
+	- `DELETE /api/databank/{key}` — delete entry
+
+Flyway is enabled for `resource-catalog-service` via the config-repo (see `config-server/src/main/resources/config-repo/resource-catalog-service.yml`) and migrations run on application startup by default. If you prefer running migrations as a separate CI/CD job, update the Compose/CI configuration accordingly.
+
+Tests: a `WebMvcTest` for the controller is included at `resource-catalog-service/src/test/java/.../DataBankControllerTest.java` to validate controller behavior. For full integration verification, run the application with Postgres (or use Testcontainers) to validate migrations and JPA mappings.
+
+>>>>>>> main
 ## Java / Maven
 
 This repository uses a Maven aggregator at the root and Spring Boot 3.

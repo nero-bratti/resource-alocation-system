@@ -41,6 +41,14 @@
 2. Scaffolding created in this repo (Maven aggregator, module folders, basic controllers, Dockerfiles, and `docker-compose.yml`).
 3. Added Keycloak realm export and updated `docker-compose.yml` to import the realm for local testing.
 4. Added minimal Prometheus and OpenTelemetry configuration, a tiny `frontend` placeholder, and basic test-dependency entries in module POMs.
+<<<<<<< HEAD
+=======
+5. Implemented a small "data-bank" feature inside `resource-catalog-service`:
+   - Added Flyway migration `V1__create_data_bank.sql` to create a `data_bank` table (JSONB payload, timestamps, trigger).
+   - Added JPA `DataBankEntry` entity, `DataBankRepository`, `DataBankService`, and `DataBankController` exposing CRUD endpoints at `/api/databank`.
+   - Enabled Flyway for `resource-catalog-service` via the `config-repo` config so migrations run on startup (config updated in `config-server/src/main/resources/config-repo/resource-catalog-service.yml`).
+   - Added a `WebMvcTest` (`DataBankControllerTest`) to validate the controller behavior without requiring a running DB.
+>>>>>>> main
 
 ## Probing questions (answered)
 - Should `booking-service` be responsible only for reservation management, while `permission-service` owns all entitlement and access rules? -> Booking manages reservations; `permission-service` owns authorization.
@@ -65,4 +73,12 @@
 3. Wire `booking-service` to call `permission-service` synchronously and validate the check flow.
 4. Add CI job templates that run `mvn -T 1C -DskipTests=false package` and Sonar analysis.
 
+<<<<<<< HEAD
+=======
+Additional next steps related to DataBank:
+5. Wire infra: decide whether to run Flyway as part of app startup or via a separate CI/CD migration job; update `docker-compose.yml` if you prefer a dedicated `flyway` container.
+6. Add integration tests that run against an ephemeral Postgres (Testcontainers) to validate migrations + JPA mappings.
+7. Document backup and retention policies for `data_bank` (encryption at rest, daily backups, retention 30-90 days by default).
+
+>>>>>>> main
 If you want, I can begin with item 1 (gateway token-exchange) or item 2 (permission-service check endpoint).

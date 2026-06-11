@@ -28,6 +28,27 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+<<<<<<< HEAD
+=======
+  flyway:
+    image: flyway/flyway:latest
+    command: bash -c "flyway -url=jdbc:postgresql://postgres:5432/resource_allocation -user=app -password=app-pass migrate && tail -f /dev/null"
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/resource_allocation
+      FLYWAY_USER: app
+      FLYWAY_PASSWORD: app-pass
+    volumes:
+      - ./resource-catalog-service/src/main/resources/db/migration:/flyway/sql:ro
+    depends_on:
+      - postgres
+    restart: "unless-stopped"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h postgres -p 5432 -U app || exit 1; psql -h postgres -U app -d resource_allocation -c \"select 1 from information_schema.tables where table_name='data_bank' limit 1;\" | grep -q 1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+>>>>>>> main
   config-server:
     build:
       context: .
@@ -67,6 +88,10 @@ services:
       - discovery-server
       - config-server
       - postgres
+<<<<<<< HEAD
+=======
+      - flyway
+>>>>>>> main
 
   booking-service:
     build:
@@ -78,6 +103,10 @@ services:
       - discovery-server
       - config-server
       - postgres
+<<<<<<< HEAD
+=======
+      - flyway
+>>>>>>> main
 
   permission-service:
     build:
@@ -89,6 +118,10 @@ services:
       - discovery-server
       - config-server
       - postgres
+<<<<<<< HEAD
+=======
+      - flyway
+>>>>>>> main
 
   frontend:
     build:
