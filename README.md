@@ -55,8 +55,6 @@ Clients in the realm:
 
 The `frontend` login link is available in `frontend/index.html` and points to the local Keycloak realm `resource-allocation`.
 
-<<<<<<< HEAD
-=======
 ## Data Bank (resource-catalog)
 
 A small Data Bank feature is implemented inside the `resource-catalog-service` to store arbitrary JSON payloads keyed by an application-defined key. This is implemented on the shared PostgreSQL database and managed via Flyway migrations.
@@ -72,7 +70,6 @@ Flyway is enabled for `resource-catalog-service` via the config-repo (see `confi
 
 Tests: a `WebMvcTest` for the controller is included at `resource-catalog-service/src/test/java/.../DataBankControllerTest.java` to validate controller behavior. For full integration verification, run the application with Postgres (or use Testcontainers) to validate migrations and JPA mappings.
 
->>>>>>> main
 ## Java / Maven
 
 This repository uses a Maven aggregator at the root and Spring Boot 3.
