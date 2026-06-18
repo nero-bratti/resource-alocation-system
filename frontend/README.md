@@ -14,7 +14,14 @@ Build for production:
 npm run build
 ```
 
+Docker build:
+
+```bash
+docker build -t resource-allocation-frontend .
+```
+
 Notes:
 - The SPA uses Keycloak JS (`keycloak-js`) and expects a Keycloak server available at `http://localhost:8081` with realm `resource-allocation` and client `frontend` (public).
-- It calls the gateway at `http://localhost:8080/api/databank` and passes the user bearer token. The gateway is expected to perform token-exchange to internal tokens for backend services.
-- Adjust Keycloak URL/realm/client in `src/App.vue` if your environment differs.
+- It calls backend APIs through the gateway proxy on `/api` and forwards bearer tokens to the gateway.
+- The gateway route configuration has been updated to forward `/api/databank/**` to `resource-catalog-service`.
+- Adjust the Keycloak settings in `src/App.vue` if your environment differs.

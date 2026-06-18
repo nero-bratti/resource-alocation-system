@@ -1,0 +1,8 @@
+skills:
+  - id: grill-me
+    title: Grill me design interview
+    description: Interview the user relentlessly about the plan or design until reaching shared understanding, using the repo-local `grill-me.md` guidance.
+    triggers:
+      - grill-me
+    auto_execute: false
+    path: grill-me.md

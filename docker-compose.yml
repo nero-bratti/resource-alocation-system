@@ -30,7 +30,11 @@ services:
 
   flyway:
     image: flyway/flyway:latest
-    command: bash -c "flyway -url=jdbc:postgresql://postgres:5432/resource_allocation -user=app -password=app-pass migrate && tail -f /dev/null"
+    command:
+      -url=jdbc:postgresql://postgres:5432/resource_allocation
+      -user=app
+      -password=app-pass
+      migrate
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/resource_allocation
       FLYWAY_USER: app
@@ -63,6 +67,7 @@ services:
       - '8761:8761'
     depends_on:
       - config-server
+      - postgres
 
   gateway-service:
     build:

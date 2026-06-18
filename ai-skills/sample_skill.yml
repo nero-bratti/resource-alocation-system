@@ -1,0 +1,6 @@
+id: grill-me
+steps:
+  - name: Describe grill-me intention
+    run: python -c "print('This is the repo-local grill-me skill. It should ask design questions and follow grill-me.md.')"
+  - name: Reference skill file
+    run: python -c "import os; print('Skill file path:', os.path.abspath('grill-me.md'))"

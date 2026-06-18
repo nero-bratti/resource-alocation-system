@@ -1,0 +1,26 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Run Maven tests
+        run: |
+          mvn -B -T 1C -pl config-server,discovery-server,gateway-service,resource-catalog-service,booking-service,permission-service -am test

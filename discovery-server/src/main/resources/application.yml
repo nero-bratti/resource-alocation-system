@@ -5,6 +5,16 @@ spring:
   application:
     name: discovery-server
 
+  datasource:
+    url: jdbc:postgresql://postgres:5432/resource_allocation
+    username: app
+    password: app-pass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 eureka:
   client:
     register-with-eureka: false

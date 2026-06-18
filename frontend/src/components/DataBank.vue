@@ -55,17 +55,22 @@ export default {
   mounted() {
     this.fetchAll()
   },
+  computed: {
+    apiBase() {
+      return import.meta.env.VITE_API_BASE_URL ?? '/api'
+    }
+  },
   methods: {
     authHeader() {
       return { Authorization: `Bearer ${this.token}` }
     },
     fetchAll() {
-      axios.get('http://localhost:8080/api/databank', { headers: this.authHeader() })
+      axios.get(`${this.apiBase}/databank`, { headers: this.authHeader() })
         .then(r => { this.entries = r.data })
         .catch(e => this.showMessage('Failed to load entries', 'alert-danger'))
     },
     loadEntry(key) {
-      axios.get(`http://localhost:8080/api/databank/${encodeURIComponent(key)}`, { headers: this.authHeader() })
+      axios.get(`${this.apiBase}/databank/${encodeURIComponent(key)}`, { headers: this.authHeader() })
         .then(r => {
           this.form.key = r.data.key
           // payload may be JSON; pretty-print if possible
@@ -77,13 +82,13 @@ export default {
       // ensure payload is valid JSON string
       try { JSON.parse(this.form.payload) } catch (e) { this.showMessage('Payload must be valid JSON', 'alert-warning'); return }
 
-      axios.post('http://localhost:8080/api/databank', { key: this.form.key, payload: this.form.payload }, { headers: this.authHeader() })
+      axios.post(`${this.apiBase}/databank`, { key: this.form.key, payload: this.form.payload }, { headers: this.authHeader() })
         .then(() => { this.showMessage('Saved', 'alert-success'); this.fetchAll() })
         .catch(() => this.showMessage('Save failed', 'alert-danger'))
     },
     deleteEntry(key) {
       if (!confirm('Delete entry?')) return
-      axios.delete(`http://localhost:8080/api/databank/${encodeURIComponent(key)}`, { headers: this.authHeader() })
+      axios.delete(`${this.apiBase}/databank/${encodeURIComponent(key)}`, { headers: this.authHeader() })
         .then(() => { this.showMessage('Deleted', 'alert-success'); this.fetchAll() })
         .catch(() => this.showMessage('Delete failed', 'alert-danger'))
     },
