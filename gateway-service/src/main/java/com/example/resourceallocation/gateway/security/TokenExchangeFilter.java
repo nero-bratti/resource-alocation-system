@@ -8,6 +8,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Component
 public class TokenExchangeFilter implements WebFilter {
     private final TokenExchangeService exchangeService;
@@ -22,13 +24,15 @@ public class TokenExchangeFilter implements WebFilter {
         if (auth == null || !auth.startsWith("Bearer ")) {
             return chain.filter(exchange);
         }
-        String subjectToken = auth.substring(7);
-        return exchangeService.exchange(subjectToken)
-                .flatMap(internalToken -> {
-                    ServerHttpRequest mutated = exchange.getRequest().mutate()
-                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + internalToken)
-                            .build();
-                    return chain.filter(exchange.mutate().request(mutated).build());
-                });
+
+        return Optional.ofNullable(exchangeService)
+                .map(service -> service.exchange(auth.substring(7))
+                        .flatMap(internalToken -> {
+                            ServerHttpRequest mutated = exchange.getRequest().mutate()
+                                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + internalToken)
+                                    .build();
+                            return chain.filter(exchange.mutate().request(mutated).build());
+                        }))
+                .orElseGet(() -> chain.filter(exchange));
     }
 }

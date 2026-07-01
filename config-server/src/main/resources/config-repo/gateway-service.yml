@@ -40,6 +40,23 @@ springdoc:
 server:
   port: 8080
 
-authorization:
-  openid:
-    issuer-uri: http://keycloak:8080/realms/master
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: gateway-client
+            client-secret: gateway-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak:
+            issuer-uri: http://keycloak:8080/realms/resource-allocation
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/resource-allocation

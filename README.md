@@ -44,6 +44,7 @@ Open the following portals:
 This scaffold uses Keycloak as the OpenID Connect provider.
 
 - Keycloak admin: `admin` / `admin` (available at http://localhost:8081)
+- In the current local Docker setup, Keycloak may report as unhealthy even while the admin UI is reachable on port 8081, so it is best treated as a development dependency rather than a hard health gate.
 - Sample users included for development:
 	- `teacher1` / `teacher-pass` (role `teacher`)
 	- `student1` / `student-pass` (role `student`)
@@ -89,6 +90,27 @@ This scaffold is intentionally minimal:
 - service discovery is handled by Eureka.
 - security is planned with Keycloak / OpenID Connect.
 - observability is staged through OTEL, Prometheus, and Grafana.
+
+## Development approach: SDD and AI-assisted delivery
+
+This project was shaped with a lightweight Specification-Driven Development (SDD) workflow and a small set of repository-local AI skills. The goal was to make architectural decisions explicit before implementation and to keep the coding loop fast, repeatable, and verifiable.
+
+### How the workflow worked
+
+- SDD first: requirements and architectural choices were captured as concrete decisions before coding began. This covered service boundaries, authentication flow, persistence strategy, API shape, and observability.
+- Grill-me style decision framing: ambiguous design questions were resolved through a short interview-style process so the implementation would follow a consistent blueprint rather than ad-hoc changes.
+- AI skills for repeatable tasks: reusable prompts and task definitions were stored in `ai-skills/` so common development steps could be invoked consistently and reviewed safely.
+- Incremental validation: each feature was wired into the local stack, then verified with tests and live smoke checks rather than relying only on static reasoning.
+- Evidence-driven iteration: the project was considered ready when Maven tests passed and the Docker Compose stack came up with core services healthy.
+
+### Practical technique summary
+
+- Define the architecture and constraints before implementation.
+- Break work into small, verifiable slices (for example: config server, discovery, gateway, catalog, booking, permissions).
+- Use AI assistance to scaffold, explain, and refine implementation steps while keeping human review in the loop.
+- Prefer runnable evidence such as unit tests, integration tests, and local service health checks.
+
+This combination of SDD and skill-based AI guidance helped keep the repository understandable, modular, and easier to evolve as new features are added.
 
 ## AI Skills
 
