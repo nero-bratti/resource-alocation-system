@@ -1,7 +1,6 @@
 FROM maven:3.9.8-eclipse-temurin-17 AS build
 WORKDIR /workspace
-COPY pom.xml ./
-COPY gateway-service ./gateway-service
+COPY . .
 RUN mvn -pl gateway-service -am -DskipTests package
 
 FROM eclipse-temurin:17-jre

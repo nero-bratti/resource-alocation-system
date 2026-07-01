@@ -1,7 +1,6 @@
 FROM maven:3.9.8-eclipse-temurin-17 AS build
 WORKDIR /workspace
-COPY pom.xml ./
-COPY config-server ./config-server
+COPY . .
 RUN mvn -pl config-server -am -DskipTests package
 
 FROM eclipse-temurin:17-jre

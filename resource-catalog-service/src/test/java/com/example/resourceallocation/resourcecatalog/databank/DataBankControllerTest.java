@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,15 +44,17 @@ public class DataBankControllerTest {
         when(service.upsert("k1", "{\"a\":1}")).thenReturn(entry);
         when(service.findByKey("k1")).thenReturn(Optional.of(entry));
 
+        MediaType jsonMediaType = Objects.requireNonNull(MediaType.APPLICATION_JSON);
+
         mockMvc.perform(post("/api/databank")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(entry)))
+                .contentType(jsonMediaType)
+                .content(Objects.requireNonNull(objectMapper.writeValueAsString(entry))))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(jsonMediaType));
 
         mockMvc.perform(get("/api/databank/k1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(jsonMediaType));
     }
 
     @Test

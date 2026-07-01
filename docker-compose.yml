@@ -39,8 +39,11 @@ services:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/resource_allocation
       FLYWAY_USER: app
       FLYWAY_PASSWORD: app-pass
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql/resource-catalog,filesystem:/flyway/sql/booking,filesystem:/flyway/sql/permission
     volumes:
-      - ./resource-catalog-service/src/main/resources/db/migration:/flyway/sql:ro
+      - ./resource-catalog-service/src/main/resources/db/migration:/flyway/sql/resource-catalog:ro
+      - ./booking-service/src/main/resources/db/migration:/flyway/sql/booking:ro
+      - ./permission-service/src/main/resources/db/migration:/flyway/sql/permission:ro
     depends_on:
       - postgres
     restart: "unless-stopped"
@@ -61,8 +64,8 @@ services:
 
   discovery-server:
     build:
-      context: ./discovery-server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: discovery-server/Dockerfile
     ports:
       - '8761:8761'
     depends_on:
@@ -71,8 +74,8 @@ services:
 
   gateway-service:
     build:
-      context: ./gateway-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: gateway-service/Dockerfile
     ports:
       - '8080:8080'
     depends_on:
@@ -82,8 +85,8 @@ services:
 
   resource-catalog-service:
     build:
-      context: ./resource-catalog-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: resource-catalog-service/Dockerfile
     ports:
       - '8082:8082'
     depends_on:
@@ -94,8 +97,8 @@ services:
 
   booking-service:
     build:
-      context: ./booking-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: booking-service/Dockerfile
     ports:
       - '8083:8083'
     depends_on:
@@ -106,8 +109,8 @@ services:
 
   permission-service:
     build:
-      context: ./permission-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: permission-service/Dockerfile
     ports:
       - '8084:8084'
     depends_on:
@@ -144,7 +147,7 @@ services:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml:ro
     ports:
       - '4317:4317'
-      - '8888:8888'
+      - '9888:8888'
 
   sonarqube:
     image: sonarqube:latest

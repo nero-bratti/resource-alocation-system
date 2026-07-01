@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -38,7 +38,7 @@ public class RegistryPersistenceService {
                 org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
                 headers.add("Content-Type", "application/json");
                 org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(mapper.writeValueAsString(instance), headers);
-                rest.postForLocation(url, entity);
+                rest.postForLocation(Objects.requireNonNull(url), entity);
                 log.info("Restored instance {} for app {}", r.getInstanceId(), r.getAppName());
             } catch (Exception e) {
                 log.warn("Failed to restore instance {}: {}", r.getInstanceId(), e.getMessage());
