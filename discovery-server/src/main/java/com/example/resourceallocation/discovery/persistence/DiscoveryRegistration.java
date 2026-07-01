@@ -29,7 +29,7 @@ public class DiscoveryRegistration {
     private Integer securePort;
 
     @Lob
-    @Column(name = "metadata")
+    @Column(name = "metadata", columnDefinition = "TEXT")
     private String metadata;
 
     @Column(name = "status")

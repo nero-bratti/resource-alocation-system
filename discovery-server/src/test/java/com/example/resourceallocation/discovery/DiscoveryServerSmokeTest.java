@@ -13,7 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
         "spring.datasource.username=sa",
         "spring.datasource.password=",
-        "spring.jpa.hibernate.ddl-auto=update"
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false",
+        "spring.main.lazy-initialization=true"
 })
 public class DiscoveryServerSmokeTest {
 

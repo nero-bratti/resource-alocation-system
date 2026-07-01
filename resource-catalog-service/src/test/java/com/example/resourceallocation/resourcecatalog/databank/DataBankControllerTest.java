@@ -1,6 +1,8 @@
 package com.example.resourceallocation.resourcecatalog.databank;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,8 +19,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
-@WebMvcTest(DataBankController.class)
+@WebMvcTest(controllers = DataBankController.class)
 public class DataBankControllerTest {
 
     @Autowired
@@ -31,6 +34,7 @@ public class DataBankControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @WithMockUser
     void getByKeyNotFound() throws Exception {
         when(service.findByKey("missing")).thenReturn(Optional.empty());
 
@@ -39,6 +43,7 @@ public class DataBankControllerTest {
     }
 
     @Test
+    @WithMockUser
     void upsertAndGet() throws Exception {
         DataBankEntry entry = new DataBankEntry("k1", "{\"a\":1}");
         when(service.upsert("k1", "{\"a\":1}")).thenReturn(entry);
@@ -47,6 +52,7 @@ public class DataBankControllerTest {
         MediaType jsonMediaType = Objects.requireNonNull(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(post("/api/databank")
+                .with(csrf())
                 .contentType(jsonMediaType)
                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(entry))))
                 .andExpect(status().isOk())
@@ -58,7 +64,9 @@ public class DataBankControllerTest {
     }
 
     @Test
+    @WithMockUser
     void deleteOk() throws Exception {
-        mockMvc.perform(delete("/api/databank/k1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/databank/k1").with(csrf())).andExpect(status().isNoContent());
+        verify(service).deleteByKey("k1");
     }
 }

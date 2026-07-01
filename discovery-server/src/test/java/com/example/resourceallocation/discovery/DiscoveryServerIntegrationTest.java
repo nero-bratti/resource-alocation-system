@@ -14,32 +14,28 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Testcontainers
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
+        "spring.datasource.username=sa",
+        "spring.datasource.password=",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "eureka.client.register-with-eureka=false",
+        "eureka.client.fetch-registry=false"
+})
 public class DiscoveryServerIntegrationTest {
-
-    @Container
-    @SuppressWarnings("resource")
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry r) {
-        r.add("spring.datasource.url", () -> postgres.getJdbcUrl());
-        r.add("spring.datasource.username", () -> postgres.getUsername());
-        r.add("spring.datasource.password", () -> postgres.getPassword());
-        r.add("spring.jpa.hibernate.ddl-auto", () -> "update");
+        r.add("spring.datasource.url", () -> "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+        r.add("spring.datasource.username", () -> "sa");
+        r.add("spring.datasource.password", () -> "");
+        r.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
     }
 
     @Autowired

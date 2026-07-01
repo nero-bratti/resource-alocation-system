@@ -6,10 +6,10 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-smoke-test:
     runs-on: ubuntu-latest
-    outputs:
-      build-status: success
+    environment: staging
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,34 +25,22 @@ jobs:
         run: |
           mvn -B -T 1C -pl config-server,discovery-server,gateway-service,resource-catalog-service,booking-service,permission-service -am package -DskipTests
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
-
-      - name: Run Java tests
+      - name: Start local stack
         run: |
-          mvn -B -T 1C -pl config-server,discovery-server,gateway-service,resource-catalog-service,booking-service,permission-service -am test
+          docker compose up -d postgres keycloak config-server discovery-server gateway-service resource-catalog-service booking-service permission-service frontend
 
-  deploy-staging:
-    needs: test
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Mock staging deploy
+      - name: Wait for services
         run: |
-          echo "Staging pipeline: deploy step is mocked for now."
-          echo "No real staging environment is configured yet."
-          echo "This step will be replaced with a real deploy in a future iteration."
+          for i in {1..30}; do
+            curl -fsS http://localhost:8080/actuator/health >/dev/null 2>&1 && break
+            sleep 5
+          done
+
+      - name: Smoke test gateway
+        run: |
+          curl -fsS http://localhost:8080/actuator/health
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose down -v

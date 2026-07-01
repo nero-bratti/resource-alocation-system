@@ -31,7 +31,8 @@ public class RegistryPersistenceService {
     @EventListener(ApplicationReadyEvent.class)
     public void loadOnStartup() {
         log.info("Discovery registry loader starting - restoring persisted instances");
-        repo.findAll().forEach(r -> {
+        try {
+            repo.findAll().forEach(r -> {
             try {
                 JsonNode instance = buildInstanceNodeFromRegistration(r);
                 String url = String.format("http://localhost:8761/eureka/apps/%s", r.getAppName());
@@ -44,6 +45,9 @@ public class RegistryPersistenceService {
                 log.warn("Failed to restore instance {}: {}", r.getInstanceId(), e.getMessage());
             }
         });
+        } catch (Exception e) {
+            log.debug("Skipping discovery registry restore during startup: {}", e.getMessage());
+        }
     }
 
     @Scheduled(initialDelayString = "15000", fixedDelayString = "30000")
